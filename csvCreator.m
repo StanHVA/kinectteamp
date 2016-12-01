@@ -8,7 +8,7 @@ matfile = '20160712t175113-depth-16b-videotime-skeleton.mat';
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 load(matfile);
-
+%%
 [rows,cols]=size(bodiesArray);
 
 bodiesArray1 = cell(bodiesArray(:,2));
@@ -101,8 +101,15 @@ while x < 4
     end
 
     filename=strcat('base_', tested , '_', matfile, '.csv');
-
-    dlmwrite(filename,datawithtime,'precision',15);
+    
+    
+    fid = fopen(filename,'wt');
+	
+    fprintf(fid, 'Frames,Spine_base,Spine_mid,Neck,Head,Shoulder_left,Elbow_left,Wrist_left,Hand_left,Shoulder_right,Elbow_right,Wrist_right,Hand_right,Hip_left,Knee_left,Ankle_left,Foot_left,Hip_right,Knee_right,Ankle_right,Foot_right,Spine_shoulder,Handtip_left,Thumb_left,Handtip_right,Thumb_right\n');
+    fclose(fid);
+    
+    dlmwrite(filename,datawithtime,'-append','precision',15);
+    
     
     clearvars data datawithtime sensor1 sensor2 sensor3 sensor4 sensor5 sensor6 sensor7 sensor8 sensor9 sensor10 sensor11 sensor12 sensor13 sensor14 sensor15 sensor16 sensor17 sensor18 sensor19 sensor20 sensor21 sensor22 sensor23 sensor24 sensor25 sorcombined 
     
