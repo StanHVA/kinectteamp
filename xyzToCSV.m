@@ -3,8 +3,10 @@ clear
 %% load mat file consisting of skeleton and depth data of TUG
 %cd C:\Users\Stan\Documents\Data_Big_Data;
 %matfile = '20160712t173512-depth-16b-videotime-skeleton.mat';
-matfile = uigetfile('*.mat','Selecteer een Matlab Bestand');
+[file, folder] = uigetfile('*.mat','Selecteer een Matlab Bestand');
+matfile = fullfile(folder, file);
 load(matfile);
+%%
 
 filename = inputdlg('Geef een bestandsnaam op', 'Opslaan')
 
@@ -60,4 +62,4 @@ fclose(fid);
 
 dlmwrite(filename,joints_total,'-append','precision',15);
 
-clearvars ans filename fid joints_data joints_total time_double
+clearvars ans filename fid joints_data joints_total time_double file folder
