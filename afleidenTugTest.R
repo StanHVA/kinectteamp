@@ -160,3 +160,111 @@ gemiddeldeSnelheid <- ( tugTestAfstand / tugTijd ) * meterPerSeconde
 
 
 plot((datacsv$Milliseconds/1000), genormaliseerdHead_y)
+
+tugTestTijden <-  as.numeric(min(tugTestTijd):max(tugTestTijd))
+tugTestTijden <- data.frame(tugTestTijden)
+
+BenodigdeData <- filter(datacsv, datacsv$Milliseconds >= tugStart & datacsv$Milliseconds <= tugStop)
+BenodigdeData <- data.frame(BenodigdeData)
+
+
+#Herkenne positie
+  #van 79 naar 1
+  for (i in (tugTestTijd[1]:1)) {
+    if(genormaliseerdHead_y[i] > zitHoogteHoofd) {
+      beginZitten <- i
+      break
+    }
+  }
+  
+  if( ! exists('beginZitten') )
+  {
+    beginZitten <- 0
+  }
+  
+  for (i in (tugTestTijd[1]:tugTestTijd[2])) {
+    if(genormaliseerdHead_y[i] > minimumLengtePersoon) {
+      beginStaan <- i
+      break
+    }
+  }
+  
+  for (i in (tugTestTijd[2]:tugTestTijd[1])) {
+    if(genormaliseerdHead_y[i] > minimumLengtePersoon) {
+      eindStaan <- i
+      break
+    }
+  }
+  
+  for (i in (tugTestTijd[2]:length(Head_y))) {
+    if(genormaliseerdHead_y[i] > zitHoogteHoofd) {
+      eindZitten <- i
+      break
+    }
+  }
+  if( ! exists('eindZitten') )
+  {
+    eindZitten <- length(Head_y)
+  }
+  
+  posities <- c(beginZitten, tugTestTijd[1], beginStaan, eindStaan, tugTestTijd[2], eindZitten)
+
+   positie1 <- c(posities[1]:posities[2])
+   positie1 <- positie1 - max
+   positie1 <- data.frame(positie1)
+   positie1$houding <- "beginZitten"
+   names(positie1) <- c("TugTestTijd", "Houding")
+   
+   positie2 <- c(posities[2]:posities[3])
+   positie2 <- data.frame(positie2)
+   positie2 <- head(positie2, -1)
+   positie2$houding <- "opstaan"
+   names(positie2) <- c("TugTestTijd", "Houding")
+   
+   positie3 <- c(posities[3]:posities[4])
+   positie3 <- data.frame(positie3)
+   positie3 <- head(positie3, -1)
+   positie3$houding <- "lopen"
+   names(positie3) <- c("TugTestTijd", "Houding")
+   
+   positie4 <- c(posities[4]:posities[5])
+   positie4 <- data.frame(positie4)
+   positie4 <- head(positie4, -1)
+   positie4$houding <- "gaan zitten"
+   names(positie4) <- c("TugTestTijd", "Houding")
+   
+   positie5 <- c(posities[5]:posities[6])
+   positie5 <- data.frame(positie5)
+   positie5$houding <- "Zitten"
+   names(positie5) <- c("TugTestTijd", "Houding")
+  
+   
+   
+  Houdingen <-rbind( positie2, positie3, positie4)
+ names(Houdingen) <- c("TugTestTijd", "Houding")
+  
+  Houdingen <- data.frame(Houdingen)
+  
+  
+ NewDataset <- cbind(BenodigdeData, Houdingen)
+
+ 
+library(ggplot2)
+
+p = ggplot(NewDataset, aes(y=NewDataset$Head_y, x=NewDataset$Milliseconds, color= NewDataset$Houding))
+p + geom_line(size = 2)
+#+ scale_size_discrete(range = c(4,6))
+
+Totaletugtesttijd <-  max(NewDataset$Milliseconds) - min(NewDataset$Milliseconds)
+Totaletugtesttijd <- Totaletugtesttijd / 1000
+
+if (Totaletugtesttijd < 11) {
+print(" U bent gezond")
+} else if (Totaletugtesttijd > 10 & Totaletugtesttijd <20 ) {
+    print("Goed")
+} else {
+  print("Laat u onderzoeken")
+}
+ 
+
+  
